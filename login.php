@@ -1,5 +1,5 @@
-<?php // Script 8.8 - login.php
-/* This page lets people log into the site (in thoery). */
+<?php // Script 9.6 - login.php #3
+/* This page lets people log into the site (almost). */
 
 // Set the page title and include the header file:
 define('TITLE', 'Login');
@@ -18,7 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    
       if ( (strtolower($_POST['email']) == 'me@example.com') && ($_POST['password'] == 'testpass') ) { // Correct!
       
-         print '<p class="text--success">You are logged in!<br>Now you can blah, blah, blah...</p>';
+         // Do session stuff:
+         session_start();
+         $_SESSION['email'] = $_POST['email'];
+         $_SESSION['loggedin'] = time();
+         
+         // Redirect the user to the welcome page!
+         ob_end_clean(); // Destroy the buffer!
+         header('Location: welcome.php');
+         exit();
 
       } else { // Incorrect!
       
