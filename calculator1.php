@@ -5,14 +5,21 @@
    <title>Cost Calculator</title>
 </head>
 <body>
-<?php // Script 10.4 - calculator1.php
+<?php // Script 10.5 - calculator2.php
 /* This script displays and handles an HTML form.
 It uses a function to calculate a total from a quantity and price. */
+
+// Define a tax rate:
+$tax = 8.75;
 
 // This function performs the calculations.
 function calculate_total($quantity, $price) {
 
+   global $tax;
+
    $total = $quantity * $price; // Calculation
+   $taxrate = ($tax / 100) + 1;
+   $total = $total * $taxrate; // Add the tax.
    $total = number_format($total, 2); // Formatting
    
    return $total; // Return the value.
@@ -27,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD' == 'POST']) {
    
       // Call the function and print the results:
       $total = calculate_total($_POST['quantity'], $_POST['price']);
-      print "<p>Your total comes to $<span style=\"font-weight: bold;\">$total</span>.</p>";
+      print "<p>Your total comes to $<span style=\"font-weight: bold;\">$total</span>, including the $tax percent tax rate.</p>";
       
    } else { // Inappropriate values entered.
       print '<p style="color:red;">Please enter a valid quantity and price!</p>';
