@@ -1,21 +1,21 @@
-      <!-- Script 8.7 - footer.html -->
-   <!-- END CHANGEABLE CONTENT. -->
-   </main>
-   
-   <footer container class="siteFooter">
-      <p>Design uses <a href="http://concisecss.com/">Concise CSS Framework</a></p>
-   <p class="float-right"><?php // Print the current date and time...
-   // Set the timezone:
-   date_default_timezone_set('America/Phoenix');
-   
-   // Now print the date and time:
-   print date('g:i a 1 F j');
-   ?></p>
-   </footer>
+<!-- END CHANGEABLE CONTENT. -->
+<?php // Script 13.4 - footer.html
 
-</body>
-</html><?php // Script 8.12 - footer.html #3
+// Display general admin links...
+// - if the user is an administrator and it's not the logout.php page
+// - or if the $loggedin variable is true (i.e., the user just logged in)
+if ( (is_administrator() && (basename($_SERVER['PHP_SELF']) != 'logout.php'))
+OR (isset($loggedin) && $loggedin) ) {
 
-// Send the buffer to the browser and turn off buffering:
-ob_end_flush();
+   // Create the links:
+   print '<hr><h3>Site Admin</h3><p><a href="add_quote.php">Add Quote</a> <->
+   <a href="view_quotes.php">View All Quotes</a> <->
+   <a href="logout.php">Logout</a></p>';
+   
+}
+
 ?>
+   </div><!-- container -->
+   <div id="footer">Content &copy; 2016</div>
+</body>
+</html>
