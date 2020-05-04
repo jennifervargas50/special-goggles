@@ -1,24 +1,56 @@
-<?php // Script 8.4 - index.php
-/* This is the home page for this site.
-It uses templates to create the layout. */
-
-// Address error management, if you want.
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+<?php // Script 13.11 index.php
+/* This is the home page for this site. It displays:
+- The most recent quote (default)
+- OR, a random quote
+- OR, a random favorite quote */
 
 // Include the header:
 include('templates/header.html');
-// Leave the PHP section to display lots of HTML:
-?>
 
-<h2>Welcome to a J.D. Salinger Fan Club!</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
-ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco 
-laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in 
-voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat 
-non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+// Need the database connection:
+include('mysqli_connect.php');
 
-<?php // Return to PHP.
-include('templates/footer.html');
-// Include the footer.
+// Define the query...
+// Change the particulars depending upon values passed in the URL:
+if (isset($_GET['random'])) {
+   $query = 'SELECT id, quote, source, favorite FROM quotes ORDER BY RAND() DESC LIMIT 1';
+} elseif (isset($_GET['favorite'])) {
+   $query = 'SELECT id, quote, source, favorite FROM quotes WHERE favorite=1 ORDER BY RAND() DESC LIMIT 1';
+} else {
+   $query = 'SELECT id, quote, source, favorite FROM quotes ORDER BY date_entered() DESC LIMIT 1';
+}
+
+// Run the query:
+if ($result = mysqli_query($dbc, $query)) {
+
+   // Retrieve the returned record:
+   $row = mysqli_fetch_array($result);
+   
+   // Print the record:
+   print "<div><blockquote>{$row['quote']}</blockquote>- {$row['source']}";
+   
+   // Is this a favorite?
+   if ($row['favorite'] == 1) {
+      print ' <strong>Favorite!</strong>';
+   }
+   
+   // Complete the DIV:
+   print '</div>';
+   
+   // Restrict access to administrators only:
+   if(!is_administrator()) {
+      print "<p><b>Quote Admin:</b> <a href=\"edit_quote.php?id={$row['id']}\">Edit</a> <->
+      <a href=\"delete_quote.php?id={$row['id']}\">Delete</a>
+      </p>\n";
+   }
+   
+} else { // Query didn't run.
+   print '<p class="error">Could not retrieve the data because:<br>' . mysqli_error($dbc) . '.</p><p>The query being run was: ' . $query . '</p>';
+} // End of IF.
+
+mysqli_close($dbc); // Close the connection.
+
+print '<p><a href="index.php">Latest</a> <-> <a href="index.php?random=true">Random</a> <-> <a href="index.php?favorite=true">Favorite</a></p>';
+
+include('templates/footer.html'); // Include the footer.
 ?>
